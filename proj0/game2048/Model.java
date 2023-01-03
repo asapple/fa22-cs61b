@@ -1,5 +1,6 @@
 package game2048;
 
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -115,9 +116,38 @@ public class Model extends Observable {
      *    value, then the leading two tiles in the direction of motion merge,
      *    and the trailing tile does not.
      */
+    private int nextRow(int row,int col,boolean[][] ismerge){
+        for (int i=row+1;i<=size()-1;i++){
+            if(_board.tile(col,i) != null ) {
+                if(_board.tile(col,i).value() == _board.tile(col,row).value() && !ismerge[i][col])
+                    return i;
+                else
+                    return i - 1;
+            }
+        }
+        return size()-1;
+    }
     public void tilt(Side side) {
         // TODO: Fill in this function.
+        _board.setViewingPerspective(side);
+        int s = size();
+        boolean[][] ismerge = new boolean[s][s];
+        for (int i = 0; i < s; i++) {
+            for (int j = 0; j < s; j++) {
+                ismerge[i][j] = false;
+            }
+        }
 
+        for (int i=_board.size()-2;i>=0;i--)
+            for (int j=0;j<_board.size();j++)
+                if(_board.tile(j, i) != null){
+                    Tile t = _board.tile(j, i);
+                    int nextrow = nextRow(i,j,ismerge);
+                    ismerge[nextrow][j] = _board.move(j,nextrow,t);
+                    if(ismerge[nextrow][j])
+                        _score += _board.tile(j,nextrow).value();
+                }
+        _board.setViewingPerspective(Side.NORTH);
         checkGameOver();
     }
 
@@ -138,6 +168,10 @@ public class Model extends Observable {
      */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for (int i=0;i<b.size();i++)
+            for (int j=0;j<b.size();j++)
+                if(b.tile(i,j) == null)
+                    return true;
         return false;
     }
 
@@ -148,6 +182,10 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (int i=0;i<b.size();i++)
+            for (int j=0;j<b.size();j++)
+                if( b.tile(i,j) != null && b.tile(i,j).value() == MAX_PIECE)
+                    return true;
         return false;
     }
 
@@ -159,6 +197,14 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        if(emptySpaceExists(b))
+            return true;
+        if(b.tile(0,0).value() == b.tile(0,1).value()||b.tile(0,0).value() == b.tile(1,0).value())
+            return true;
+        for (int i=1;i<b.size();i++)
+            for (int j=1;j<b.size();j++)
+                if( b.tile(i,j).value() == b.tile(i-1,j).value() || b.tile(i,j).value() == b.tile(i,j-1).value())
+                    return true;
         return false;
     }
 

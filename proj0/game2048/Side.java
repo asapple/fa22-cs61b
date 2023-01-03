@@ -3,7 +3,7 @@ package game2048;
 /** Symbolic names for the four sides of a board.
  *  @author P. N. Hilfinger */
 public enum Side {
-    /** The parameters (COL0, ROW0, DCOL, and DROW) for each of the
+    /**  The parameters (COL0, ROW0, DCOL, and DROW) for each of the
      *  symbolic directions, D, below are to be interpreted as follows:
      *     The board's standard orientation has the top of the board
      *     as NORTH, and rows and columns (see Model) are numbered
